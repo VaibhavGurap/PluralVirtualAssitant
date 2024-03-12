@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI with Uvicorn",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["main:app", "--host", "127.0.0.1", "--port", "9000"],
+      "env": {
+        "PYTHONPATH": "C:/ProgramData/anaconda3/envs/face-recongnition/python.exe"
+      },
+      "console": "integratedTerminal"
+    }
+  ]
+}
