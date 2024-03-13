@@ -12,3 +12,9 @@ class Employee(Base):
     lastName = Column(String)
     email = Column(String, unique=True)
     embeddings = Column(LargeBinary(length=(2**32)-1))
+    deptId = Column(Integer)
+class Department(Base):
+    __tablename__="departments"
+
+    deptId = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True)

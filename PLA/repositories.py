@@ -6,9 +6,24 @@ import os
 from utils import getEmbeddings
 import pickle
 
+class DepartmentRepo:
+    async def create(db: Session, name : str):
+        db_item = models.Department(name=name)
+        db.add(db_item)
+        db.commit()
+        db.refresh(db_item)
+        response=dict()
+        response["status"]=True
+        response["res"]=db_item
+        return response
+    
+    async def getAll(db : Session):
+        res= db.query(models.Department).all()
+        return res
+
 class EmployeeRepo:
-    async def create(db: Session, firstName, lastName, email, img1, img2, img3, img4, img5):
-        db_item = models.Employee(firstName=firstName, lastName=lastName, email=email)
+    async def create(db: Session, firstName, lastName, email, deptId, img1, img2, img3, img4, img5):
+        db_item = models.Employee(firstName=firstName, lastName=lastName, email=email, deptId=deptId)
         db.add(db_item)
         db.commit()
         db.refresh(db_item)

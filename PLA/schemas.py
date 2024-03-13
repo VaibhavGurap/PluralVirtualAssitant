@@ -5,6 +5,7 @@ class EmployeeBase(BaseModel):
     firstName : str
     lastName : str
     email : str
+    deptId : int
 
 class EmployeeCreate(EmployeeBase):
     pass
