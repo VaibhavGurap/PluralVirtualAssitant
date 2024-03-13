@@ -29,7 +29,7 @@ async def getDepts(db : Session = Depends(get_db)):
     return await DepartmentRepo.getAll(db)
 
 
-@app.post('/employees',response_model=schemas.Employee,status_code=201)
+@app.post('/employees',status_code=201)
 async def createEmployee(firstName: str, lastName : str, email : str, deptId : int, img1 : UploadFile = File(...), img2 : UploadFile = File(...), img3 : UploadFile = File(...), img4 : UploadFile = File(...), img5 : UploadFile = File(...), db: Session = Depends(get_db)):
     return await EmployeeRepo.create(db=db, firstName=firstName, lastName=lastName, email=email, deptId=deptId, img1=img1, img2=img2, img3=img3, img4=img4, img5=img5)
 
