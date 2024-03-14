@@ -15,3 +15,8 @@ class Employee(EmployeeBase):
     
     class Config:
         orm_mode = True
+
+class Response(BaseModel):
+    status : bool
+    res : str
+    error : str

@@ -70,7 +70,7 @@ class EmployeeRepo:
             db.commit()
             db.refresh(db_item)
             response["status"]=True
-            # response["res"]=db_item
+            response["res"]=db_item.empId
         else:
             response["status"]=False
             response["error"]="Department doesn't exists"

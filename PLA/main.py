@@ -11,6 +11,7 @@ from typing import List,Optional
 from fastapi.encoders import jsonable_encoder
 from utils import saveImg
 from verifyFace import verifyFace
+import requests
 
 app = FastAPI(title="Plural Virtual Assitant")
 models.Base.metadata.create_all(bind=engine)
@@ -44,6 +45,12 @@ async def isEmployee(img : UploadFile = File(...),db: Session= Depends(get_db)):
     status = await verifyFace(img_path=path,db=db)
     return status
 
+@app.post('/notify',status_code=200)
+async def notify(email : str, msg : str):
+    url = "https://prod-23.centralindia.logic.azure.com:443/workflows/6d812989a9394a38931510b7de6bcb50/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SUXDOT3mn2YL7E01-MTzxQZo4MtvcOkIp1ABvDei-FA"
+    obj = {"email":email,"message":msg}
+    requests.post(url,json=obj)
+    return True
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=9000, reload=True)
