@@ -77,7 +77,7 @@ async def new_app(Person_visited: Person_Visited):
         "dept_name":Person_visited.employee_dept_name
        }
     
-    employee_email=EmployeeRepo.getEmail(data['Emp_FN'],data['Emp_LN'],data['dept_name'])
+    employee_email=EmployeeRepo.getEmail(data['Emp_FN'],data['Emp_LN'],data['dept_name'], db : Session = Depends(get_db))
     obj={"email":employee_email,"info":data}
     try:
         response = requests.post(url_notify, json=obj)
