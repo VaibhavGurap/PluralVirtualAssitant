@@ -12,8 +12,19 @@ from fastapi.encoders import jsonable_encoder
 from utils import saveImg
 from verifyFace import verifyFace
 import requests
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Plural Virtual Assitant")
+origins = [
+    "http://localhost:3000",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 models.Base.metadata.create_all(bind=engine)
 
 @app.exception_handler(Exception)
