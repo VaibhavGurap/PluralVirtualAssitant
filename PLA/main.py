@@ -4,7 +4,7 @@ import models
 from db import get_db, engine
 import models as models
 import schemas as schemas
-from repositories import EmployeeRepo, DepartmentRepo
+from repositories import EmployeeRepo, DepartmentRepo ,Person_Visited
 from sqlalchemy.orm import Session
 import uvicorn
 from typing import List,Optional
@@ -62,6 +62,32 @@ async def notify(email : str, msg : str):
     obj = {"email":email,"message":msg}
     requests.post(url,json=obj)
     return True
+
+@app.post("/new_appointment",status_code=200)
+async def new_app(Person_visited: Person_Visited):
+    if not all([Person_visited.person_name,Person_visited.employee_firstName,Person_visited.employee_lastName ,Person_visited.person_email_id, Person_visited.phone_number,Person_visited.employee_dept_name]):
+        raise HTTPException(status_code=400, detail="Missing required fields")
+    url_notify="" #put the notify url here which is going to be used for the visited employee or just replace it with the above url if that works
+    data={
+        "Name":Person_visited.person_name,
+        "Emp_FN": Person_visited.employee_firstName,
+        "Emp_LN": Person_visited.employee_lastName ,
+        "email": Person_visited.person_email_id, 
+        "phone": Person_visited.phone_number,
+        "dept_name":Person_visited.employee_dept_name
+       }
+    
+    employee_email=EmployeeRepo.getEmail(data['Emp_FN'],data['Emp_LN'],data['dept_name'])
+    obj={"email":employee_email,"info":data}
+    try:
+        response = requests.post(url_notify, json=obj)
+        response.raise_for_status()
+        return True
+    except requests.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Failed process: {e}")
+
+
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=9000, reload=True)

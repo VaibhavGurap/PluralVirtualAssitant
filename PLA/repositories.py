@@ -5,6 +5,7 @@ import schemas
 import os
 from utils import getEmbeddings
 import pickle
+from pydantic import BaseModel
 
 class DepartmentRepo:
     async def create(db: Session, name : str):
@@ -92,4 +93,29 @@ class EmployeeRepo:
     
     async def getName(id : int, db: Session):
         res=db.query(models.Employee).get(id)
-        return res.firstName+" "+res.lastName
+        if res:
+            return res.firstName+" "+res.lastName
+        else:
+            return None
+    
+    async def getEmail(employee_firstname:str ,employee_lastname:str,employee_dept_name:str,db:Session):
+        dept = db.query(models.Department).filter(models.Department.name == employee_dept_name).first() #get deptID using the name to use in employee table query
+        if dept is not None:
+            dept_id = dept.deptId
+        else:
+            None    
+        res=db.query(models.Employee).filter_by(firstName=employee_firstname,lastName=employee_lastname,deptId=dept_id).all()
+        if res:
+            return res[0].email
+        else:
+            return  None
+        
+        
+class Person_Visited(BaseModel):
+    person_name:str
+    employee_firstName:str
+    employee_lastName:str
+    person_email_id:str
+    phone_number:str
+    employee_dept_name:str
+
