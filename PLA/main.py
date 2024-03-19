@@ -64,10 +64,10 @@ async def notify(email : str, msg : str):
     return True
 
 @app.post("/new_appointment",status_code=200)
-async def new_app(Person_visited: Person_Visited):
+async def new_app(Person_visited: Person_Visited,db: Session= Depends(get_db)):
+    print(Person_visited)
     if not all([Person_visited.person_name,Person_visited.employee_firstName,Person_visited.employee_lastName ,Person_visited.person_email_id, Person_visited.phone_number,Person_visited.employee_dept_name]):
         raise HTTPException(status_code=400, detail="Missing required fields")
-    url_notify="" #put the notify url here which is going to be used for the visited employee or just replace it with the above url if that works
     data={
         "Name":Person_visited.person_name,
         "Emp_FN": Person_visited.employee_firstName,
@@ -77,11 +77,10 @@ async def new_app(Person_visited: Person_Visited):
         "dept_name":Person_visited.employee_dept_name
        }
     
-    employee_email=EmployeeRepo.getEmail(data['Emp_FN'],data['Emp_LN'],data['dept_name'], db : Session = Depends(get_db))
-    obj={"email":employee_email,"info":data}
+    employee_email=await EmployeeRepo.getEmail(data['Emp_FN'],data['Emp_LN'],data['dept_name'],db)
+    print(employee_email)
     try:
-        response = requests.post(url_notify, json=obj)
-        response.raise_for_status()
+        response = await notify(employee_email,Person_visited.person_name+" is here to meet you")
         return True
     except requests.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Failed process: {e}")
