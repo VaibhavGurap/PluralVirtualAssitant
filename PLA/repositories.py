@@ -28,6 +28,10 @@ class DepartmentRepo:
         if res is None:
             return False
         return True
+    
+    async def getDept(db: Session, deptId : int):
+        res = db.query(models.Department).get(deptId)
+        return res
 
 class EmployeeRepo:
     async def create(db: Session, firstName, lastName, email, deptId, img1, img2, img3, img4, img5):
@@ -81,7 +85,9 @@ class EmployeeRepo:
         res=db.query(models.Employee).offset(skip).limit(limit).all()
         employees=[]
         for item in res:
-            employees.append({"EmpId":item.empId, "FirstName":item.firstName, "LastName":item.lastName, "Email":item.email})
+            deptId=item.deptId
+            dept=db.query(models.Department).get(deptId).name
+            employees.append({"EmpId":item.empId, "FirstName":item.firstName, "LastName":item.lastName, "Email":item.email, "Department":dept})
         return employees
     
     async def getEmployeesDictWithEmbeddings(db: Session):
