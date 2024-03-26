@@ -13,6 +13,8 @@ from utils import saveImg
 from verifyFace import verifyFace
 import requests
 from fastapi.middleware.cors import CORSMiddleware
+from sharepointUtils import checkAppointment as chkApp
+from bs4 import BeautifulSoup
 
 app = FastAPI(title="Plural Virtual Assitant")
 origins = [
@@ -86,7 +88,18 @@ async def new_app(Person_visited: Person_Visited,db: Session= Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed process: {e}")
 
 
-
+@app.post("/checkAppointment",status_code=200)
+async def checkAppointment(email:str):
+    res=chkApp(email=email)
+    if res[0]:
+        meeting = res[1]
+        soup = BeautifulSoup(meeting["MeetingSubject"].iloc[0], 'html.parser')
+        target_div = soup.find('div')
+        meetingSubject = target_div.text.strip()
+        await notify(meeting['Organizer'].to_string(index=False),email+" is here to meet you for a scheduled meeting")
+        return { "appointment" : True , "meetingSubject" : meetingSubject , "organizer" : meeting["Organizer"].to_string(index=False) , "startTime" : meeting["MeetingStartTime"].to_string(index=False), "endTime" : meeting["MeetingEndTime"].to_string(index=False) }
+    else:
+        return { "appointment" : False}
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=9000, reload=True)
