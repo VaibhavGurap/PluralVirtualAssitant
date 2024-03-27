@@ -39,7 +39,7 @@ def getMeeting(email:str):
     today_df = df[df['MeetingStartTime'].dt.date == pd.Timestamp.today().date()]
     print(today_df[['MeetingStartTime']])
     today_df['MeetingWith']=today_df['MeetingWith'].fillna('')
-    filtered_df=today_df[today_df['MeetingWith'].str.contains(email,case=False)]
+    filtered_df=today_df[today_df['MeetingWith'].str.contains(email+";",case=False)]
     return filtered_df
 
 def checkAppointment(email:str):
