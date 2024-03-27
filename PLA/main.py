@@ -2,7 +2,6 @@ from fastapi import Depends, FastAPI, HTTPException, File, UploadFile
 from fastapi.responses import JSONResponse
 import models
 from db import get_db, engine
-import models as models
 import schemas as schemas
 from repositories import EmployeeRepo, DepartmentRepo ,Person_Visited
 from sqlalchemy.orm import Session
@@ -65,6 +64,13 @@ async def notify(email : str, msg : str):
     requests.post(url,json=obj)
     return True
 
+@app.post("/createAppointment",status_code=200)
+async def createAppointment(visitorName: str, visitorEmail: str, empId: int, db: Session=Depends(get_db)):
+    print(empId)
+    email = await EmployeeRepo.getEmailByEmpId(empid=empId,db=db)
+    response = await notify(email,visitorName+" wants to meet you")
+    return True
+
 @app.post("/new_appointment",status_code=200)
 async def new_app(Person_visited: Person_Visited,db: Session= Depends(get_db)):
     print(Person_visited)
@@ -89,14 +95,15 @@ async def new_app(Person_visited: Person_Visited,db: Session= Depends(get_db)):
 
 
 @app.post("/checkAppointment",status_code=200)
-async def checkAppointment(email:str):
+async def checkAppointment(email:str,name:str):
     res=chkApp(email=email)
     if res[0]:
         meeting = res[1]
         soup = BeautifulSoup(meeting["MeetingSubject"].iloc[0], 'html.parser')
         target_div = soup.find('div')
         meetingSubject = target_div.text.strip()
-        await notify(meeting['Organizer'].to_string(index=False),email+" is here to meet you for a scheduled meeting")
+        # await notify(meeting['Organizer'].to_string(index=False),email+" is here to meet you for a scheduled meeting")
+        await notify(meeting['Organizer'].to_string(index=False),name+" is here to meet you for a scheduled meeting")
         return { "appointment" : True , "meetingSubject" : meetingSubject , "organizer" : meeting["Organizer"].to_string(index=False) , "startTime" : meeting["MeetingStartTime"].to_string(index=False), "endTime" : meeting["MeetingEndTime"].to_string(index=False) }
     else:
         return { "appointment" : False}

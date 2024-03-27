@@ -104,6 +104,13 @@ class EmployeeRepo:
         else:
             return None
     
+    async def getEmailByEmpId(empid : int, db: Session):
+        res=db.query(models.Employee).get(empid)
+        if res:
+            return res.email
+        else:
+            return None
+
     async def getEmail(employee_firstname:str ,employee_lastname:str,employee_dept_name:str,db:Session):
         dept = db.query(models.Department).filter(models.Department.name == employee_dept_name).first() #get deptID using the name to use in employee table query
         if dept is not None:
