@@ -95,7 +95,7 @@ async def new_app(Person_visited: Person_Visited,db: Session= Depends(get_db)):
 
 
 @app.post("/checkAppointment",status_code=200)
-async def checkAppointment(email:str,name:str):
+async def checkAppointment(email:str,name:str,db:Session=Depends(get_db)):
     res=chkApp(email=email)
     if res[0]:
         meeting = res[1]
@@ -104,7 +104,9 @@ async def checkAppointment(email:str,name:str):
         meetingSubject = target_div.text.strip()
         # await notify(meeting['Organizer'].to_string(index=False),email+" is here to meet you for a scheduled meeting")
         await notify(meeting['Organizer'].to_string(index=False),name+" is here to meet you for a scheduled meeting")
-        return { "appointment" : True , "meetingSubject" : meetingSubject , "organizer" : meeting["Organizer"].to_string(index=False) , "startTime" : meeting["MeetingStartTime"].to_string(index=False), "endTime" : meeting["MeetingEndTime"].to_string(index=False) }
+        organizer_name=await EmployeeRepo.getNameByEmail(meeting["Organizer"].to_string(index=False),db=db)
+        # return { "appointment" : True , "meetingSubject" : meetingSubject , "organizer" : meeting["Organizer"].to_string(index=False) , "startTime" : meeting["MeetingStartTime"].to_string(index=False), "endTime" : meeting["MeetingEndTime"].to_string(index=False) }
+        return { "appointment" : True , "meetingSubject" : meetingSubject , "organizer" : organizer_name , "startTime" : meeting["MeetingStartTime"].to_string(index=False), "endTime" : meeting["MeetingEndTime"].to_string(index=False) }
     else:
         return { "appointment" : False}
 
