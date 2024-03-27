@@ -105,7 +105,6 @@ class EmployeeRepo:
             return None
     
     async def getNameByEmail(email : str, db: Session):
-        print(email+";")
         res=db.query(models.Employee).filter(models.Employee.email==email.lower()).first()
         print("Result")
         print(res)

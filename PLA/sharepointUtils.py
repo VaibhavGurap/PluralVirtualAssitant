@@ -33,8 +33,8 @@ class SharePoint:
 def getMeeting(email:str):
     meetings = SharePoint().connect_to_list(ls_name='meetings')
     df = pd.DataFrame(meetings)
-    df['MeetingStartTime'] = pd.to_datetime(df['MeetingStartTime']).dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata')
-    df['MeetingEndTime'] = pd.to_datetime(df['MeetingEndTime']).dt.tz_localize('UTC').dt.tz_convert('Asia/Kolkata')
+    df['MeetingStartTime'] = pd.to_datetime(df['MeetingStartTime']).dt.tz_localize('America/Los_Angeles').dt.tz_convert('Asia/Kolkata')
+    df['MeetingEndTime'] = pd.to_datetime(df['MeetingEndTime']).dt.tz_localize('America/Los_Angeles').dt.tz_convert('Asia/Kolkata')
     print(df[['MeetingStartTime','MeetingEndTime']])
     today_df = df[df['MeetingStartTime'].dt.date == pd.Timestamp.today().date()]
     print(today_df[['MeetingStartTime']])

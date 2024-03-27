@@ -106,7 +106,7 @@ async def checkAppointment(email:str,name:str,db:Session=Depends(get_db)):
         await notify(meeting['Organizer'].to_string(index=False),name+" is here to meet you for a scheduled meeting")
         organizer_name=await EmployeeRepo.getNameByEmail(meeting["Organizer"].to_string(index=False),db=db)
         # return { "appointment" : True , "meetingSubject" : meetingSubject , "organizer" : meeting["Organizer"].to_string(index=False) , "startTime" : meeting["MeetingStartTime"].to_string(index=False), "endTime" : meeting["MeetingEndTime"].to_string(index=False) }
-        return { "appointment" : True , "meetingSubject" : meetingSubject , "organizer" : organizer_name , "startTime" : meeting["MeetingStartTime"].to_string(index=False), "endTime" : meeting["MeetingEndTime"].to_string(index=False) }
+        return { "appointment" : True , "meetingSubject" : meetingSubject , "organizer" : organizer_name , "startTime" : meeting["MeetingStartTime"].to_string(index=False), "endTime" : meeting["MeetingEndTime"].to_string(index=False), "location" : meeting["location"].to_string(index=False) }
     else:
         return { "appointment" : False}
 
