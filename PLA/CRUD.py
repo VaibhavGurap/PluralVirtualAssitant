@@ -1,9 +1,10 @@
 
-from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy import create_engine, Column, Integer, String,BLOB
 from sqlalchemy.orm import sessionmaker, declarative_base
 from models import Employee  # Import your SQLAlchemy model
+import random
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./data.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///data.db"#db file path in folder
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -17,6 +18,7 @@ class Employee(Base):
     lastName = Column(String, index=True)
     email = Column(String, index=True)
     deptId = Column(Integer)
+    embeddings=Column(BLOB,index=True)
 
 # Function to add an employee
 def add_employee(db, employee_data: dict):
@@ -46,9 +48,20 @@ def update_employee(db, employee_id: int, new_data: dict):
         return employee
     return None
 
-# Function to retrieve all employees
-def get_employees(db):
-    return db.query(Employee).all()
+def get_employees():
+    db = SessionLocal()
+    employees = db.query(Employee).all()
+    db.close()
+    return employees
+
+# Example usage
+def display_employees():
+    employees = get_employees()
+    if employees:
+        for employee in employees:
+            print(f"ID: {employee.empId}, Name: {employee.firstName} {employee.lastName}, Email: {employee.email}, Department ID: {employee.deptId},Embeddings: {employee.embeddings}")
+        else:
+            print("No Employees Found")
 
 # Menu function
 def menu():
@@ -71,7 +84,9 @@ def manage_employees():
 
         if choice == 1:
             # Add employee
+            ind = random.randint(1, 10000)
             employee_data = {
+                "empID":input(ind),
                 "firstName": input("Enter first name: "),
                 "lastName": input("Enter last name: "),
                 "email": input("Enter email: "),
@@ -104,11 +119,7 @@ def manage_employees():
                 print(f"Employee with ID {employee_id} not found")
 
         elif choice == 4:
-            # Show all employees
-            employees = get_employees(db)
-            print("\nAll Employees:")
-            for employee in employees:
-                print(employee.empId, employee.firstName, employee.lastName, employee.email, employee.deptId)
+            display_employees()
 
         elif choice == 5:
             break

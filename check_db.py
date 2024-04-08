@@ -13,7 +13,7 @@ rows = cursor.fetchall()
 count=0
 for row in rows:
     count+=1
-    print(count)
+    print(row)
 # Close the cursor and connection
 cursor.close()
 conn.close()

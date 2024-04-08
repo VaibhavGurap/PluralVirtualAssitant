@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base
 from models import Employee  # Import your SQLAlchemy model
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./data.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///data.db"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
