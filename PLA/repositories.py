@@ -46,7 +46,7 @@ class EmployeeRepo:
             cwd = os.getcwd()
             cwd=cwd.replace('\\','/')
             parent_dir = cwd+"/PLA/images"
-            directory = str(db_item.empId)
+            directory = str(db_item.empId)+firstName
             path = os.path.join(parent_dir,directory)
             os.mkdir(path)
             

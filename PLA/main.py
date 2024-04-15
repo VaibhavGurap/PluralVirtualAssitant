@@ -13,6 +13,7 @@ from verifyFace import verifyFace
 import requests
 from fastapi.middleware.cors import CORSMiddleware
 from sharepointUtils import checkAppointment as chkApp
+from sharepointUtils import checkOTP as chkOTP
 from bs4 import BeautifulSoup
 
 app = FastAPI(title="Plural Virtual Assitant")
@@ -109,6 +110,14 @@ async def checkAppointment(email:str,name:str,db:Session=Depends(get_db)):
         return { "appointment" : True , "meetingSubject" : meetingSubject , "organizer" : organizer_name , "startTime" : meeting["MeetingStartTime"].to_string(index=False), "endTime" : meeting["MeetingEndTime"].to_string(index=False), "location" : meeting["location"].to_string(index=False) }
     else:
         return { "appointment" : False}
-
+    
+@app.post("/verifyOTP",status_code=200)
+async def checkOTP(otp:str):
+    resp=chkOTP(otp)
+    if(resp[0]):
+        await notify(resp[1],resp[2]+" is here to meet you")
+        return {"verified": True}
+    else:
+        return {"verified" : False}
 if __name__ == "__main__":
     uvicorn.run("main:app", port=9000, reload=True)

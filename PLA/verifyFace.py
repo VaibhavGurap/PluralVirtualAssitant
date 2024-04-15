@@ -47,7 +47,7 @@ async def verifyFace(img_path,db):
                 if min>face_distance:
                     min=face_distance
                     id=str(key)
-            if min<0.3:
+            if min<0.5:
                 # print(str(id)+" Employee")
                 isEmployee=True
     if isEmployee:
