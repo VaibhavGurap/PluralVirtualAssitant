@@ -20,7 +20,8 @@ def display_employees():
     if employees:
         for employee in employees:
             print(f"ID: {employee.empId}, Name: {employee.firstName} {employee.lastName}, Email: {employee.email}, Department ID: {employee.deptId}")
-        else:
-            print("No Employees Found")
+    else:
+        print("No Employees Found")
+
 
 display_employees()

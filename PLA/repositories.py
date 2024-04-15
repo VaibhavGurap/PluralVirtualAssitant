@@ -1,8 +1,10 @@
 import aiofiles
 from sqlalchemy.orm import Session
 import models, db
+from models import Employee
 import schemas
 import os
+from sqlalchemy.orm import defer
 from utils import getEmbeddings
 import pickle
 from pydantic import BaseModel
@@ -82,14 +84,14 @@ class EmployeeRepo:
         return response
     
     async def fetch_all(db: Session, skip: int = 0, limit: int = 100):
-        res=db.query(models.Employee).offset(skip).limit(limit).all()
+        res = db.query(Employee).options(defer(Employee.embeddings)).offset(skip).limit(limit).all()
         employees=[]
         for item in res:
             deptId=item.deptId
-            dept=db.query(models.Department).get(deptId).name
-            employees.append({"EmpId":item.empId, "FirstName":item.firstName, "LastName":item.lastName, "Email":item.email, "Department":dept})
+            dept=db.query(models.Department).get(deptId)
+            employees.append({"EmpId":item.empId, "FirstName":item.firstName, "LastName":item.lastName, "Email":item.email, "Department":dept.name})
         return employees
-    
+        
     async def getEmployeesDictWithEmbeddings(db: Session):
         res=db.query(models.Employee).all()
         employees=dict()

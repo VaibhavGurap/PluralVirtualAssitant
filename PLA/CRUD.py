@@ -60,7 +60,7 @@ def display_employees():
     if employees:
         for employee in employees:
             print(f"ID: {employee.empId}, Name: {employee.firstName} {employee.lastName}, Email: {employee.email}, Department ID: {employee.deptId},Embeddings: {employee.embeddings}")
-        else:
+    else:
             print("No Employees Found")
 
 # Menu function
