@@ -112,7 +112,7 @@ async def checkAppointment(email:str,name:str,db:Session=Depends(get_db)):
     else:
         return { "appointment" : False}
     
-<<<<<<< HEAD
+
 
 @app.post("/delete",status_code=201)
 def remove_employee(empId,db:Session=Depends(get_db)):
@@ -124,7 +124,6 @@ def remove_employee(empId,db:Session=Depends(get_db)):
         print(f"Employee with ID {employee_id} not found")
 
 
-=======
 @app.post("/verifyOTP",status_code=200)
 async def checkOTP(otp:str):
     resp=chkOTP(otp)
@@ -133,7 +132,7 @@ async def checkOTP(otp:str):
         return {"verified": True}
     else:
         return {"verified" : False}
->>>>>>> e00b91a341f8a0a56a315b37bb6874b7a732cfbe
+
 if __name__ == "__main__":
     uvicorn.run("main:app", port=9000, reload=True)
 
