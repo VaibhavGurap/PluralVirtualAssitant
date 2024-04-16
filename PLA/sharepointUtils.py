@@ -52,4 +52,14 @@ def checkAppointment(email:str):
     else:
         return (False,)
 
-    
+def checkOTP(otp:str):
+    otps = SharePoint().connect_to_list(ls_name="Visitor-OTP")
+    df = pd.DataFrame(otps)
+    otp_values = df['OTP2'].astype(str).tolist()  # Convert Series to list
+    filtered_df=df[df['OTP2'].str.match("string;#"+otp,case=False)]
+    if len(filtered_df)>0:
+        organizer = filtered_df["Organizer"].astype(str).tolist()  # Convert Series to list
+        name = filtered_df["VisitorName"].astype(str).tolist()  # Convert Series to list
+        return (True, organizer[0], name[0])
+    else:
+        return (False,)
