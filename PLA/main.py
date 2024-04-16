@@ -1,6 +1,7 @@
 from fastapi import Depends, FastAPI, HTTPException, File, UploadFile
 from fastapi.responses import JSONResponse
 import models
+import time
 from db import get_db, engine
 import schemas as schemas
 from repositories import EmployeeRepo, DepartmentRepo ,Person_Visited
@@ -109,6 +110,20 @@ async def checkAppointment(email:str,name:str,db:Session=Depends(get_db)):
         return { "appointment" : True , "meetingSubject" : meetingSubject , "organizer" : organizer_name , "startTime" : meeting["MeetingStartTime"].to_string(index=False), "endTime" : meeting["MeetingEndTime"].to_string(index=False), "location" : meeting["location"].to_string(index=False) }
     else:
         return { "appointment" : False}
+    
+
+@app.post("/delete",status_code=201)
+def remove_employee(empId,db:Session=Depends(get_db)):
+    # Delete employee with ID 1
+    employee_id = 7
+    if EmployeeRepo.delete_employee(employee_id,db):
+        print(f"Employee with ID {employee_id} deleted successfully")
+    else:
+        print(f"Employee with ID {employee_id} not found")
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=9000, reload=True)
+
+
+    

@@ -2,6 +2,7 @@ from repositories import EmployeeRepo
 from PIL import Image
 import numpy as np
 import os
+import time
 import matplotlib.pyplot as plt
 import pickle
 from keras_vggface.utils import preprocess_input
@@ -9,15 +10,16 @@ from keras.applications.vgg16 import VGG16
 from keras_vggface.vggface import VGGFace
 import uuid 
 import aiofiles
-from utils import detect_extract_face
+from utils import detect_extract_face,detect_face_haar
 import cv2
 from scipy.spatial.distance import cosine
 
 async def verifyFace(img_path,db):
+    start_time=time.time()
     employee_dict = await EmployeeRepo.getEmployeesDictWithEmbeddings(db)
     image_to_classify = plt.imread(img_path)
     image_to_classify_rgb=cv2.cvtColor(image_to_classify,cv2.COLOR_BGR2RGB)
-    res1,res2=detect_extract_face(image_to_classify_rgb)
+    res1,res2=detect_face_haar(image_to_classify_rgb)#changed here haar cascade from mtcnn
     sample_faces = [res2]*5
     min=999
     reply=dict()
@@ -31,7 +33,7 @@ async def verifyFace(img_path,db):
             # print("in")
             sample_faces=np.asarray(sample_faces,'float32')
             sample_faces = preprocess_input(sample_faces)
-            vggface_model = VGGFace(include_top=False, model='resnet50', input_shape=(224,224,3), pooling='avg')  
+            vggface_model = VGGFace(include_top=False, model='resnet50', input_shape=(224,224,3))  
             sample_faces_embeddings_test = vggface_model.predict(sample_faces)
             id=""
             for key,value in employee_dict.items():
@@ -47,7 +49,7 @@ async def verifyFace(img_path,db):
                 if min>face_distance:
                     min=face_distance
                     id=str(key)
-            if min<0.3:
+            if min<0.5:
                 # print(str(id)+" Employee")
                 isEmployee=True
     if isEmployee:
@@ -57,5 +59,7 @@ async def verifyFace(img_path,db):
     else:
         # reply="Not an Employee"
         reply = {"isEmployee":False}
+    end_time=time.time()
+    print("Total time:",end_time-start_time)    
     return reply
      

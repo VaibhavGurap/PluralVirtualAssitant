@@ -47,7 +47,7 @@ class EmployeeRepo:
             db.refresh(db_item)
             cwd = os.getcwd()
             cwd=cwd.replace('\\','/')
-            parent_dir = cwd+"/PLA/images"
+            parent_dir = cwd+"/images"
             directory = str(db_item.empId)
             path = os.path.join(parent_dir,directory)
             os.mkdir(path)
@@ -92,6 +92,14 @@ class EmployeeRepo:
             employees.append({"EmpId":item.empId, "FirstName":item.firstName, "LastName":item.lastName, "Email":item.email, "Department":dept.name})
         return employees
         
+    async def delete_employee(employee_id: int,db:Session):
+        employee = db.query(Employee).filter(Employee.empId == employee_id).first()
+        if employee:
+            db.delete(employee)
+            db.commit()
+            return True
+        return False
+      
     async def getEmployeesDictWithEmbeddings(db: Session):
         res=db.query(models.Employee).all()
         employees=dict()

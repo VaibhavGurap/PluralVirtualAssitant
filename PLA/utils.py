@@ -14,6 +14,35 @@ from keras_vggface.vggface import VGGFace
 import uuid 
 import aiofiles
 
+def detect_face_haar(image_to_detect):
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(image_to_detect, cv2.COLOR_BGR2GRAY)
+    cwd = os.getcwd()
+
+    # Load the Haar Cascade classifier for face detection
+    face_cascade = cv2.CascadeClassifier(cwd+'/haarcascade_frontalface_default.xml')
+
+    # Detect faces in the grayscale image
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+    # Check if any faces are detected
+    if len(faces) < 1:
+        print("Face not detected. Please take photo again")
+        return False, None
+
+    # Extract the bounding box of the first detected face
+    x, y, w, h = faces[0]
+
+    # Extract the face region from the image
+    face_image = image_to_detect[y:y+h, x:x+w]
+
+    # Resize the face image to (224, 224)
+    face_image_resized = cv2.resize(face_image, (224, 224))
+
+    return (True, face_image_resized)
+
+
+
 def detect_extract_face(image_to_detect):
     mtcnn_detector = MTCNN()
     
@@ -63,13 +92,14 @@ def getEmbeddings(path):
             print("No face found")
         else:
             embeddings.append(model_embeddings(face))
-    embeddings_blob=pickle.dumps(embeddings)
+    embeddings_blob=pickle.dumps(embeddings)#changes made 
     return embeddings_blob
 
 async def saveImg(img):
     cwd = os.getcwd()
     cwd=cwd.replace('\\','/')
-    parent_dir = cwd+"/PLA/temp"
+    print(cwd)
+    parent_dir = cwd+"/temp" 
     directory = str(uuid.uuid4().hex[:6].upper())
     path = os.path.join(parent_dir,directory)
     os.mkdir(path)
@@ -77,6 +107,7 @@ async def saveImg(img):
     async with aiofiles.open(path+"/"+img.filename, 'wb') as outfile:
         content = await img.read()  # async read
         await outfile.write(content)
+    print(path+"/"+img.filename)    
     return path+"/"+img.filename
 
 def generate_qr_code(data,filename):
