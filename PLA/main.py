@@ -30,7 +30,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 models.Base.metadata.create_all(bind=engine)
-vggface_model = VGGFace(include_top=False, model='resnet50', input_shape=(224,224,3))
+import tensorflow as tf
+
+# Get a list of physical GPU devices
+physical_devices = tf.config.list_physical_devices('GPU')
+print(physical_devices)
+# Enable memory growth for all devices
+for device in physical_devices:
+    tf.config.experimental.set_memory_growth(device, True)
+
+
+# vggface_model = VGGFace(include_top=False, model='resnet50', input_shape=(224,224,3))
+vggface_model = VGGFace(model='resnet50', include_top=False, input_shape=(224, 224, 3))
+
 
 @app.exception_handler(Exception)
 def validation_exception_handler(request, err):

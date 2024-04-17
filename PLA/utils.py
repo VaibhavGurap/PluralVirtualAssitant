@@ -14,6 +14,7 @@ from keras_vggface.vggface import VGGFace
 import uuid 
 import aiofiles
 
+
 def detect_face_haar(image_to_detect):
     # Convert the image to grayscale
     gray = cv2.cvtColor(image_to_detect, cv2.COLOR_BGR2GRAY)

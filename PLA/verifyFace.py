@@ -15,6 +15,7 @@ import cv2
 from scipy.spatial.distance import cosine
 import datetime
 import io
+import tensorflow as tf
 
 async def verifyFace(vggface_model,img_path,db,checkOut):
     start_time=time.time()
