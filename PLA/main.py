@@ -10,12 +10,13 @@ import uvicorn
 from typing import List,Optional
 from fastapi.encoders import jsonable_encoder
 from utils import saveImg
-from verifyFace import verifyFace
+from verifyFace import verifyFace, verifyFaceV2
 import requests
 from fastapi.middleware.cors import CORSMiddleware
 from sharepointUtils import checkAppointment as chkApp
 from sharepointUtils import checkOTP as chkOTP
 from bs4 import BeautifulSoup
+from keras_vggface.vggface import VGGFace
 
 app = FastAPI(title="Plural Virtual Assitant")
 origins = [
@@ -29,6 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 models.Base.metadata.create_all(bind=engine)
+vggface_model = VGGFace(include_top=False, model='resnet50', input_shape=(224,224,3))
 
 @app.exception_handler(Exception)
 def validation_exception_handler(request, err):
@@ -56,13 +58,18 @@ async def getAllEmployees(db: Session = Depends(get_db)):
 @app.post('/isEmployee',status_code=200)
 async def isEmployee(img : UploadFile = File(...),db: Session= Depends(get_db)):
     path = await saveImg(img=img)
-    status = await verifyFace(img_path=path,db=db,checkOut=False)
+    status = await verifyFace(vggface_model,img_path=path,db=db,checkOut=False)
+    return status
+
+@app.post('/isEmployeeV2',status_code=200)
+async def isEmployeeV2(img : UploadFile = File(...),db: Session= Depends(get_db)):
+    status = await verifyFaceV2(img=img,db=db,checkOut=False)
     return status
 
 @app.post('/employeeCheckOut',status_code=200)
 async def employeeCheckOut(img : UploadFile = File(...),db: Session = Depends(get_db)):
     path = await saveImg(img=img)
-    status = await verifyFace(img_path=path,db=db,checkOut=True)
+    status = await verifyFace(vggface_model,img_path=path,db=db,checkOut=True)
     return status
 
 @app.post('/notify',status_code=200)

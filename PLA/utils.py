@@ -72,12 +72,12 @@ def detect_extract_face(image_to_detect):
         return (True,current_face_image_np_array)
     
 def model_embeddings(sample_face):
-  print(sample_face.shape)
+#   print(sample_face.shape)
   sample_faces_1= np.asarray(sample_face,'float32')
-  print(sample_faces_1.shape)
+#   print(sample_faces_1.shape)
   sample_faces_1 = np.expand_dims(sample_face, axis=0).astype('float32')
   sample_faces_1 = preprocess_input(sample_faces_1)
-  print(sample_faces_1.shape)
+#   print(sample_faces_1.shape)
   vggface_model = VGGFace(include_top=False, model='resnet50', input_shape=(224,224,3), pooling='avg')  
   sample_faces_embeddings=vggface_model.predict(sample_faces_1)
   return sample_faces_embeddings
