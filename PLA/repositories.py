@@ -8,10 +8,11 @@ from sqlalchemy.orm import defer
 from utils import getEmbeddings
 import pickle
 from pydantic import BaseModel
+from sqlalchemy import and_
 
 class AttendanceRepo:
     async def createCheckIn(db: Session, empId : int, date, checkIn):
-        res = db.query(models.Attendance).filter(models.Attendance.empId==empId).all()
+        res = db.query(models.Attendance).filter(and_(models.Attendance.empId==empId, models.Attendance.date==date)).all()
         if len(res)==0:
             db_item = models.Attendance(empId=empId,date=date,checkIn=checkIn)
             db.add(db_item)
@@ -20,7 +21,13 @@ class AttendanceRepo:
             return True
         else:
             return False
-
+    
+    async def markCheckout(db : Session, empId : int, date, checkOut):
+        res = db.query(models.Attendance).filter(and_(models.Attendance.empId==empId, models.Attendance.date==date)).first()
+        if res:
+            res.checkOut=checkOut
+            db.add(res)
+            db.commit()
 
 class DepartmentRepo:
     async def create(db: Session, name : str):

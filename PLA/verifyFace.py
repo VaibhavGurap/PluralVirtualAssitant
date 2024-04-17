@@ -15,7 +15,7 @@ import cv2
 from scipy.spatial.distance import cosine
 import datetime
 
-async def verifyFace(img_path,db):
+async def verifyFace(img_path,db,checkOut):
     start_time=time.time()
     employee_dict = await EmployeeRepo.getEmployeesDictWithEmbeddings(db)
     image_to_classify = plt.imread(img_path)
@@ -55,8 +55,12 @@ async def verifyFace(img_path,db):
                 isEmployee=True
     if isEmployee:
         name = await EmployeeRepo.getName(id,db)
-        firstTimeOfTheDay = await AttendanceRepo.createCheckIn(db,id,datetime.date.today(),datetime.datetime.today())
-        reply = {"isEmployee":True, "name":name, "firstTimeOfTheDay":firstTimeOfTheDay}
+        if checkOut:
+            await AttendanceRepo.markCheckout(db,id,datetime.date.today(),datetime.datetime.today())
+            reply = {"isEmployee":True, "name":name}
+        else:
+            firstTimeOfTheDay = await AttendanceRepo.createCheckIn(db,id,datetime.date.today(),datetime.datetime.today())
+            reply = {"isEmployee":True, "name":name, "firstTimeOfTheDay":firstTimeOfTheDay}
     else:
         # reply="Not an Employee"
         reply = {"isEmployee":False}

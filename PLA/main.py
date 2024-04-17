@@ -48,15 +48,21 @@ async def getDepts(db : Session = Depends(get_db)):
 async def createEmployee(firstName: str, lastName : str, email : str, deptId : int, img1 : UploadFile = File(...), img2 : UploadFile = File(...), img3 : UploadFile = File(...), img4 : UploadFile = File(...), img5 : UploadFile = File(...), db: Session = Depends(get_db)):
     return await EmployeeRepo.create(db=db, firstName=firstName, lastName=lastName, email=email, deptId=deptId, img1=img1, img2=img2, img3=img3, img4=img4, img5=img5)
 
-@app.get('/employees',status_code=201)
+@app.get('/employees',status_code=200)
 async def getAllEmployees(db: Session = Depends(get_db)):
     employees = await EmployeeRepo.fetch_all(db)
     return employees
 
-@app.post('/isEmployee',status_code=201)
+@app.post('/isEmployee',status_code=200)
 async def isEmployee(img : UploadFile = File(...),db: Session= Depends(get_db)):
     path = await saveImg(img=img)
-    status = await verifyFace(img_path=path,db=db)
+    status = await verifyFace(img_path=path,db=db,checkOut=False)
+    return status
+
+@app.post('/employeeCheckOut',status_code=200)
+async def employeeCheckOut(img : UploadFile = File(...),db: Session = Depends(get_db)):
+    path = await saveImg(img=img)
+    status = await verifyFace(img_path=path,db=db,checkOut=True)
     return status
 
 @app.post('/notify',status_code=200)
