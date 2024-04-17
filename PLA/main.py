@@ -135,6 +135,9 @@ async def checkOTP(otp:str):
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=9000, reload=True)
+    import logging
+    logger = logging.getLogger('sqlalchemy')
+    logger.setLevel(logging.CRITICAL)
 
 
     

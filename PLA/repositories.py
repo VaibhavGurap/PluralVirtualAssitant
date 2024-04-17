@@ -9,6 +9,19 @@ from utils import getEmbeddings
 import pickle
 from pydantic import BaseModel
 
+class AttendanceRepo:
+    async def createCheckIn(db: Session, empId : int, date, checkIn):
+        res = db.query(models.Attendance).filter(models.Attendance.empId==empId).all()
+        if len(res)==0:
+            db_item = models.Attendance(empId=empId,date=date,checkIn=checkIn)
+            db.add(db_item)
+            db.commit()
+            db.refresh(db_item)
+            return True
+        else:
+            return False
+
+
 class DepartmentRepo:
     async def create(db: Session, name : str):
         db_item = models.Department(name=name)
@@ -47,13 +60,8 @@ class EmployeeRepo:
             db.refresh(db_item)
             cwd = os.getcwd()
             cwd=cwd.replace('\\','/')
-<<<<<<< HEAD
-            parent_dir = cwd+"/images"
-            directory = str(db_item.empId)
-=======
             parent_dir = cwd+"/PLA/images"
             directory = str(db_item.empId)+firstName
->>>>>>> e00b91a341f8a0a56a315b37bb6874b7a732cfbe
             path = os.path.join(parent_dir,directory)
             os.mkdir(path)
             

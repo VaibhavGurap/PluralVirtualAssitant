@@ -1,4 +1,4 @@
-from repositories import EmployeeRepo
+from repositories import EmployeeRepo, AttendanceRepo
 from PIL import Image
 import numpy as np
 import os
@@ -13,6 +13,7 @@ import aiofiles
 from utils import detect_extract_face,detect_face_haar
 import cv2
 from scipy.spatial.distance import cosine
+import datetime
 
 async def verifyFace(img_path,db):
     start_time=time.time()
@@ -37,7 +38,7 @@ async def verifyFace(img_path,db):
             sample_faces_embeddings_test = vggface_model.predict(sample_faces)
             id=""
             for key,value in employee_dict.items():
-                print("Comparing for "+str(key))
+                # print("Comparing for "+str(key))
                 value=np.asarray(value,'float32')
                 value=value.flatten()
                 sample_faces_embeddings_test=sample_faces_embeddings_test.flatten()
@@ -45,17 +46,17 @@ async def verifyFace(img_path,db):
                 # print(value.shape)
                 # print(sample_faces_embeddings_test.shape)
                 face_distance = cosine(value,sample_faces_embeddings_test)
-                print(face_distance)
+                # print(face_distance)
                 if min>face_distance:
                     min=face_distance
                     id=str(key)
-            if min<0.5:
+            if min<0.35:
                 # print(str(id)+" Employee")
                 isEmployee=True
     if isEmployee:
         name = await EmployeeRepo.getName(id,db)
-        # reply = name + " is a Employee"
-        reply = {"isEmployee":True, "name":name}
+        firstTimeOfTheDay = await AttendanceRepo.createCheckIn(db,id,datetime.date.today(),datetime.datetime.today())
+        reply = {"isEmployee":True, "name":name, "firstTimeOfTheDay":firstTimeOfTheDay}
     else:
         # reply="Not an Employee"
         reply = {"isEmployee":False}

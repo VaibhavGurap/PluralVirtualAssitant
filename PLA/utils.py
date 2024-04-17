@@ -20,7 +20,7 @@ def detect_face_haar(image_to_detect):
     cwd = os.getcwd()
 
     # Load the Haar Cascade classifier for face detection
-    face_cascade = cv2.CascadeClassifier(cwd+'/haarcascade_frontalface_default.xml')
+    face_cascade = cv2.CascadeClassifier(cwd+'/PLA/haarcascade_frontalface_default.xml')
 
     # Detect faces in the grayscale image
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
@@ -99,7 +99,7 @@ async def saveImg(img):
     cwd = os.getcwd()
     cwd=cwd.replace('\\','/')
     print(cwd)
-    parent_dir = cwd+"/temp" 
+    parent_dir = cwd+"/PLA/temp" 
     directory = str(uuid.uuid4().hex[:6].upper())
     path = os.path.join(parent_dir,directory)
     os.mkdir(path)

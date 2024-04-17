@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, ForeignKey, Integer, String, Float, BLOB, LargeBinary
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, BLOB, LargeBinary, Date, DateTime
 from sqlalchemy.orm import relationship
 
 from db import Base
@@ -18,3 +18,11 @@ class Department(Base):
 
     deptId = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
+
+class Attendance(Base):
+    __tablename__="attendance"
+    attendanceId = Column(Integer, primary_key=True, index=True)
+    empId = Column(Integer)
+    date = Column(Date)
+    checkIn = Column(DateTime)
+    checkOut = Column(DateTime)
